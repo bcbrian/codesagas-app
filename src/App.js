@@ -1,5 +1,5 @@
 import {
-  useEffect,
+  // useEffect,
   useState
 } from "react";
 
@@ -28,33 +28,119 @@ function App({ quiz }) {
           </>
         );
       }
+      case quiz.questions.length + 1: {
+        return <div>Result page</div>;
+      }
       default: {
-        return (
-          <>
-            <h2>
-              {
-                quiz.questions[step - 1]
-                  .question
-              }
-            </h2>
-            {quiz.questions[
-              step - 1
-            ].options.map(
-              ({ text }, i) => (
+        switch (
+          quiz.questions[step - 1].type
+        ) {
+          case "multiple choice":
+            return (
+              <>
+                <h2>
+                  {
+                    quiz.questions[
+                      step - 1
+                    ].question
+                  }
+                </h2>
+                {quiz.questions[
+                  step - 1
+                ].options.map(
+                  ({ text }, i) => (
+                    <button
+                      key={`${text}-${i}`}
+                      title={`Choose option ${
+                        i + 1
+                      }: ${text}`}
+                      onClick={() => {
+                        // setStep(step + 1);
+                      }}
+                    >
+                      {text}
+                    </button>
+                  )
+                )}
                 <button
-                  title={`Choose option ${
-                    i + 1
-                  }: ${text}`}
                   onClick={() => {
                     setStep(step + 1);
                   }}
                 >
-                  {text}
+                  next
                 </button>
-              )
-            )}
-          </>
-        );
+              </>
+            );
+          case "multiple answer":
+            return (
+              <>
+                <h2>
+                  {
+                    quiz.questions[
+                      step - 1
+                    ].question
+                  }
+                </h2>
+                {quiz.questions[
+                  step - 1
+                ].options.map(
+                  ({ text }, i) => (
+                    <button
+                      key={`${text}-${i}`}
+                      title={`Choose option ${
+                        i + 1
+                      }: ${text}`}
+                      onClick={() => {
+                        // setStep(step + 1);
+                      }}
+                    >
+                      {text}
+                    </button>
+                  )
+                )}
+                <button
+                  onClick={() => {
+                    setStep(step + 1);
+                  }}
+                >
+                  next
+                </button>
+              </>
+            );
+
+          case "free form":
+            return (
+              <>
+                <h2>
+                  {
+                    quiz.questions[
+                      step - 1
+                    ].question
+                  }
+                </h2>
+                <label htmlFor="question-input">
+                  {
+                    quiz.questions[
+                      step - 1
+                    ].label
+                  }
+                </label>
+                <input id="question-input" />
+                <button
+                  onClick={() => {
+                    setStep(step + 1);
+                  }}
+                >
+                  next
+                </button>
+              </>
+            );
+
+          default:
+            throw new Error(
+              "unsupported question type"
+            );
+        }
       }
     }
   }

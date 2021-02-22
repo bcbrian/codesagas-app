@@ -19,21 +19,46 @@ const quiz = {
           isCorrect: true
         },
         {
-          text: "b",
+          text: "b"
+        },
+        {
+          text: "c"
+        },
+        {
+          text: "d"
+        }
+      ]
+    },
+    {
+      question:
+        "a penny for your thoughts",
+      type: "free form", // store this and reference this...
+      label: "you do you"
+    },
+    {
+      question:
+        "a and c are the correct answers needs both",
+      type: "multiple answer", // store this and reference this...
+      options: [
+        {
+          text: "a",
           isCorrect: true
+        },
+        {
+          text: "b"
         },
         {
           text: "c",
           isCorrect: true
         },
         {
-          text: "d",
-          isCorrect: true
+          text: "d"
         }
       ]
     }
   ]
 };
+
 ReactDOM.render(
   <React.StrictMode>
     <App quiz={quiz} />
