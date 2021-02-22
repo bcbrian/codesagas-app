@@ -5,6 +5,10 @@ import {
 
 function App({ quiz }) {
   const [step, setStep] = useState(0);
+  const [
+    userAnswers,
+    setUserAnswers
+  ] = useState({});
   // useEffect(() => {
   //   if(step > quiz.questions.length){
 
@@ -29,7 +33,48 @@ function App({ quiz }) {
         );
       }
       case quiz.questions.length + 1: {
-        return <div>Result page</div>;
+        return (
+          <>
+            <div>
+              Your results are in!
+            </div>
+            <div>100%</div>
+            {quiz.questions.map(
+              (question, count) => (
+                <>
+                  <div>
+                    {question.question}
+                  </div>
+                  {question?.options
+                    ?.filter(
+                      ({ isCorrect }) =>
+                        isCorrect
+                    )
+                    .map(({ text }) => (
+                      <div
+                        title={`Question ${
+                          count + 1
+                        } answers is ${text}`}
+                      >
+                        {text}
+                      </div>
+                    ))}
+                  {!question?.options && (
+                    <div
+                      title={`You said: ${userAnswers[count]}`}
+                    >
+                      {
+                        userAnswers[
+                          count
+                        ]
+                      }
+                    </div>
+                  )}
+                </>
+              )
+            )}
+          </>
+        );
       }
       default: {
         switch (
@@ -125,7 +170,23 @@ function App({ quiz }) {
                     ].label
                   }
                 </label>
-                <input id="question-input" />
+                <input
+                  id="question-input"
+                  value={
+                    userAnswers[
+                      step - 1
+                    ] || ""
+                  }
+                  onChange={({
+                    target
+                  }) =>
+                    setUserAnswers({
+                      ...userAnswers,
+                      [step -
+                      1]: target.value
+                    })
+                  }
+                />
                 <button
                   onClick={() => {
                     setStep(step + 1);

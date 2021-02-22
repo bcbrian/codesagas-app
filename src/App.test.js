@@ -200,7 +200,9 @@ function getQuestion1Answer() {
     quiz.questions[0].question
   );
   const q1Option1 = getByTitleLowercase(
-    `choose option 1: ${quiz.questions[0].options[0].text}`
+    `Question ${0 + 1} answers is ${
+      quiz.questions[0].options[0].text
+    }`
   );
   expect(q1Text).toBeInTheDocument();
   expect(q1Option1).toBeInTheDocument();
@@ -221,10 +223,14 @@ function getQuestion3Answer() {
     quiz.questions[2].question
   );
   const q3Option1 = getByTitleLowercase(
-    `choose option 1: ${quiz.questions[2].options[0].text}`
+    `Question ${2 + 1} answers is ${
+      quiz.questions[2].options[0].text
+    }`
   );
   const q3Option3 = getByTitleLowercase(
-    `choose option 1: ${quiz.questions[2].options[2].text}`
+    `Question ${2 + 1} answers is ${
+      quiz.questions[2].options[0].text
+    }`
   );
   expect(q3Text).toBeInTheDocument();
   expect(q3Option1).toBeInTheDocument();
@@ -283,7 +289,7 @@ test("the user gets results when completed", () => {
 
   // assert
   const restultTitle = getByTextLowercase(
-    "You results are in"
+    "Your results are in!"
   );
   expect(
     restultTitle
@@ -298,3 +304,6 @@ test("the user gets results when completed", () => {
   getQuestion2Answer();
   getQuestion3Answer();
 });
+test.todo(
+  "the user gets accurate results when some are right and some are wrong."
+);
