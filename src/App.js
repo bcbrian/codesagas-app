@@ -3,6 +3,12 @@ import {
   useState
 } from "react";
 
+const QUESTION_TYPES = {
+  MULTIPLE_CHOICE: "multiple choice",
+  FREE_FORM: "free form",
+  MULTIPLE_ANSWER: "multiple answer"
+};
+
 function App({ quiz }) {
   const [step, setStep] = useState(0);
   const [
@@ -14,6 +20,67 @@ function App({ quiz }) {
 
   //   }
   // })
+
+  function getCalculatedPercent() {
+    const total = Object.keys(
+      userAnswers
+    ).reduce((totalRight, answer) => {
+      // if right
+      if (
+        quiz.questions[answer].type ===
+        QUESTION_TYPES.MULTIPLE_CHOICE
+      ) {
+        const rightAnswer = quiz.questions[
+          answer
+        ].options.find(
+          ({ isCorrect }) => isCorrect
+        );
+        if (
+          (userAnswers[
+            answer
+          ] = rightAnswer)
+        ) {
+          return totalRight + 1;
+        }
+      }
+      if (
+        quiz.questions[answer].type ===
+        QUESTION_TYPES.MULTIPLE_ANSWER
+      ) {
+        const rightAnswers = quiz.questions[
+          answer
+        ].options.filter(
+          ({ isCorrect }) => isCorrect
+        );
+        if (
+          rightAnswers.every((a) =>
+            userAnswers[
+              answer
+            ].includes(a)
+          ) &&
+          userAnswers[
+            answer
+          ].every((a) =>
+            rightAnswers.includes(a)
+          )
+        ) {
+          return totalRight + 1;
+        }
+      }
+      if (
+        quiz.questions[answer].type ===
+        QUESTION_TYPES.FREE_FORM
+      ) {
+        return totalRight + 1;
+      }
+      // else
+      return totalRight;
+    }, 0);
+    return Math.round(
+      (total / quiz.questions.length) *
+        100
+    );
+  }
 
   function getView(step, quiz) {
     switch (step) {
@@ -38,7 +105,9 @@ function App({ quiz }) {
             <div>
               Your results are in!
             </div>
-            <div>100%</div>
+            <div>
+              {getCalculatedPercent()}%
+            </div>
             {quiz.questions.map(
               (question, count) => (
                 <>

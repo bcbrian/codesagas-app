@@ -5,6 +5,12 @@ import {
 } from "@testing-library/react";
 import App from "./App";
 
+const QUESTION_TYPES = {
+  MULTIPLE_CHOICE: "multiple choice",
+  FREE_FORM: "free form",
+  MULTIPLE_ANSWER: "multiple answer"
+};
+
 const quiz = {
   title: "Quiz Title",
   subtitle:
@@ -14,7 +20,8 @@ const quiz = {
     {
       question:
         "a is the correct answer",
-      type: "multiple choice", // store this and reference this...
+      type:
+        QUESTION_TYPES.MULTIPLE_CHOICE,
       options: [
         {
           text: "a",
@@ -34,13 +41,14 @@ const quiz = {
     {
       question:
         "a penny for your thoughts",
-      type: "free form", // store this and reference this...
+      type: QUESTION_TYPES.FREE_FORM,
       label: "you do you"
     },
     {
       question:
         "a and c are the correct answers needs both",
-      type: "multiple answer", // store this and reference this...
+      type:
+        QUESTION_TYPES.MULTIPLE_ANSWER,
       options: [
         {
           text: "a",
@@ -115,126 +123,175 @@ function proceedToNextQuestion() {
   fireEvent.click(nextButtonElement);
 }
 
-function getQuestionOne() {
-  return {
-    q1Text: getByTextLowercase(
-      quiz.questions[0].question
-    ),
-    q1Option1: getByTitleLowercase(
-      `choose option 1: ${quiz.questions[0].options[0].text}`
-    ),
-    q1Option2: getByTitleLowercase(
-      `choose option 2: ${quiz.questions[0].options[1].text}`
-    ),
-    q1Option3: getByTitleLowercase(
-      `choose option 3: ${quiz.questions[0].options[2].text}`
-    ),
-    q1Option4: getByTitleLowercase(
-      `choose option 4: ${quiz.questions[0].options[3].text}`
-    )
-  };
+function getQuestion(question) {
+  if (
+    quiz.questions[question].type ===
+    QUESTION_TYPES.MULTIPLE_CHOICE
+  ) {
+    return {
+      qText: getByTextLowercase(
+        quiz.questions[question]
+          .question
+      ),
+      a: getByTitleLowercase(
+        `choose option 1: ${quiz.questions[question].options[0].text}`
+      ),
+      b: getByTitleLowercase(
+        `choose option 2: ${quiz.questions[question].options[1].text}`
+      ),
+      c: getByTitleLowercase(
+        `choose option 3: ${quiz.questions[question].options[2].text}`
+      ),
+      d: getByTitleLowercase(
+        `choose option 4: ${quiz.questions[question].options[3].text}`
+      )
+    };
+  }
+  if (
+    quiz.questions[question].type ===
+    QUESTION_TYPES.MULTIPLE_ANSWER
+  ) {
+    return {
+      qText: getByTextLowercase(
+        quiz.questions[question]
+          .question
+      ),
+      a: getByTitleLowercase(
+        `choose option 1: ${quiz.questions[question].options[0].text}`
+      ),
+      b: getByTitleLowercase(
+        `choose option 2: ${quiz.questions[question].options[1].text}`
+      ),
+      c: getByTitleLowercase(
+        `choose option 3: ${quiz.questions[question].options[2].text}`
+      ),
+      d: getByTitleLowercase(
+        `choose option 4: ${quiz.questions[question].options[3].text}`
+      )
+    };
+  }
+  if (
+    quiz.questions[question].type ===
+    QUESTION_TYPES.FREE_FORM
+  ) {
+    return {
+      q1Text: getByTextLowercase(
+        quiz.questions[1].question
+      ),
+      q1Label: getByLabelLowercase(
+        quiz.questions[1].label
+      )
+    };
+  }
 }
 
-function answerQuestionOne() {
-  const {
-    q1Option1
-  } = getQuestionOne();
+function answerQuestion(
+  question,
+  answers
+) {
+  if (
+    quiz.questions[question].type ===
+    QUESTION_TYPES.MULTIPLE_CHOICE
+  ) {
+    fireEvent.click(
+      getQuestion(question)[answers]
+    );
+  }
+  if (
+    quiz.questions[question].type ===
+    QUESTION_TYPES.FREE_FORM
+  ) {
+    const { q1Label } = getQuestion(
+      question
+    );
 
-  fireEvent.click(q1Option1);
+    fireEvent.change(q1Label, {
+      target: {
+        value:
+          "This is some good feedback!"
+      }
+    });
+  }
+  if (
+    quiz.questions[question].type ===
+    QUESTION_TYPES.MULTIPLE_ANSWER
+  ) {
+    answers.forEach((answer) => {
+      fireEvent.click(
+        getQuestion(question)[answer]
+      );
+    });
+  }
 }
 
-function getQuestionTwo() {
-  return {
-    q1Text: getByTextLowercase(
-      quiz.questions[1].question
-    ),
-    q1Label: getByLabelLowercase(
-      quiz.questions[1].label
-    )
-  };
-}
+function getQuestionAnswer(question) {
+  if (
+    quiz.questions[question].type ===
+    QUESTION_TYPES.MULTIPLE_CHOICE
+  ) {
+    const q1Text = getByTextLowercase(
+      quiz.questions[question].question
+    );
+    const q1Option1 = getByTitleLowercase(
+      `Question ${
+        question + 1
+      } answers is ${
+        quiz.questions[question]
+          .options[0].text
+      }`
+    );
+    expect(q1Text).toBeInTheDocument();
+    expect(
+      q1Option1
+    ).toBeInTheDocument();
+  }
+  if (
+    quiz.questions[question].type ===
+    QUESTION_TYPES.FREE_FORM
+  ) {
+    const q3Text = getByTextLowercase(
+      quiz.questions[question].question
+    );
 
-function answerQuestionTwo() {
-  const { q1Label } = getQuestionTwo();
-
-  fireEvent.change(q1Label, {
-    target: {
-      value:
-        "This is some good feedback!"
-    }
-  });
-}
-
-function getQuestionThree() {
-  return {
-    q3Text: getByTextLowercase(
-      quiz.questions[2].question
-    ),
-    q3Option1: getByTitleLowercase(
-      `choose option 1: ${quiz.questions[2].options[0].text}`
-    ),
-    q3Option2: getByTitleLowercase(
-      `choose option 2: ${quiz.questions[2].options[1].text}`
-    ),
-    q3Option3: getByTitleLowercase(
-      `choose option 3: ${quiz.questions[2].options[2].text}`
-    ),
-    q3Option4: getByTitleLowercase(
-      `choose option 4: ${quiz.questions[2].options[3].text}`
-    )
-  };
-}
-
-function answerQuestionThree() {
-  const {
-    q3Option1,
-    q3Option3
-  } = getQuestionThree();
-
-  fireEvent.click(q3Option1);
-  fireEvent.click(q3Option3);
-}
-
-function getQuestion1Answer() {
-  const q1Text = getByTextLowercase(
-    quiz.questions[0].question
-  );
-  const q1Option1 = getByTitleLowercase(
-    `Question ${0 + 1} answers is ${
-      quiz.questions[0].options[0].text
-    }`
-  );
-  expect(q1Text).toBeInTheDocument();
-  expect(q1Option1).toBeInTheDocument();
-}
-function getQuestion2Answer() {
-  const q3Text = getByTextLowercase(
-    quiz.questions[1].question
-  );
-
-  const userInput = getByTitleLowercase(
-    "You said: This is some good feedback!"
-  );
-  expect(q3Text).toBeInTheDocument();
-  expect(userInput).toBeInTheDocument();
-}
-function getQuestion3Answer() {
-  const q3Text = getByTextLowercase(
-    quiz.questions[2].question
-  );
-  const q3Option1 = getByTitleLowercase(
-    `Question ${2 + 1} answers is ${
-      quiz.questions[2].options[0].text
-    }`
-  );
-  const q3Option3 = getByTitleLowercase(
-    `Question ${2 + 1} answers is ${
-      quiz.questions[2].options[0].text
-    }`
-  );
-  expect(q3Text).toBeInTheDocument();
-  expect(q3Option1).toBeInTheDocument();
-  expect(q3Option3).toBeInTheDocument();
+    const userInput = getByTitleLowercase(
+      "You said: This is some good feedback!"
+    );
+    expect(q3Text).toBeInTheDocument();
+    expect(
+      userInput
+    ).toBeInTheDocument();
+  }
+  if (
+    quiz.questions[question].type ===
+    QUESTION_TYPES.MULTIPLE_ANSWER
+  ) {
+    const q3Text = getByTextLowercase(
+      quiz.questions[question].question
+    );
+    const q3Option1 = getByTitleLowercase(
+      `Question ${
+        question + 1
+      } answers is ${
+        quiz.questions[question]
+          .options[0].text
+      }`
+    );
+    const q3Option3 = getByTitleLowercase(
+      `Question ${
+        question + 1
+      } answers is ${
+        quiz.questions[2].options[0]
+          .text
+      }`
+    );
+    expect(q3Text).toBeInTheDocument();
+    expect(
+      q3Option1
+    ).toBeInTheDocument();
+    expect(
+      q3Option3
+    ).toBeInTheDocument();
+  }
 }
 
 test("user can start a mini test", () => {
@@ -246,18 +303,18 @@ test("user can start a mini test", () => {
 
   //assert
   const {
-    q1Text,
-    q1Option1,
-    q1Option2,
-    q1Option3,
-    q1Option4
-  } = getQuestionOne();
+    qText,
+    a,
+    b,
+    c,
+    d
+  } = getQuestion(0);
 
-  expect(q1Text).toBeInTheDocument();
-  expect(q1Option1).toBeInTheDocument();
-  expect(q1Option2).toBeInTheDocument();
-  expect(q1Option3).toBeInTheDocument();
-  expect(q1Option4).toBeInTheDocument();
+  expect(qText).toBeInTheDocument();
+  expect(a).toBeInTheDocument();
+  expect(b).toBeInTheDocument();
+  expect(c).toBeInTheDocument();
+  expect(d).toBeInTheDocument();
 });
 
 test("the user can submit answers to all the questions", () => {
@@ -266,11 +323,11 @@ test("the user can submit answers to all the questions", () => {
 
   //act
   startTheQuiz();
-  answerQuestionOne();
+  answerQuestion(0, "a");
   proceedToNextQuestion();
-  answerQuestionTwo();
+  answerQuestion(1);
   proceedToNextQuestion();
-  answerQuestionThree();
+  answerQuestion(2, ["a", "c"]);
   proceedToNextQuestion();
 });
 
@@ -280,11 +337,11 @@ test("the user gets results when completed", () => {
 
   // act
   startTheQuiz();
-  answerQuestionOne();
+  answerQuestion(0, "a");
   proceedToNextQuestion();
-  answerQuestionTwo();
+  answerQuestion(1);
   proceedToNextQuestion();
-  answerQuestionThree();
+  answerQuestion(2, ["a", "c"]);
   proceedToNextQuestion();
 
   // assert
@@ -300,10 +357,40 @@ test("the user gets results when completed", () => {
   expect(
     percentScore
   ).toBeInTheDocument();
-  getQuestion1Answer();
-  getQuestion2Answer();
-  getQuestion3Answer();
+  getQuestionAnswer(0);
+  getQuestionAnswer(1);
+  getQuestionAnswer(2);
 });
-test.todo(
-  "the user gets accurate results when some are right and some are wrong."
-);
+
+test("the user gets accurate results when some are right and some are wrong.", () => {
+  // arrange
+  render(<App quiz={quiz} />);
+
+  // act
+  startTheQuiz();
+  answerQuestion(0, "a");
+  proceedToNextQuestion();
+  answerQuestion(1);
+  proceedToNextQuestion();
+  answerQuestion(2, ["a", "c"]);
+  proceedToNextQuestion();
+
+  // assert
+  const restultTitle = getByTextLowercase(
+    "Your results are in!"
+  );
+  expect(
+    restultTitle
+  ).toBeInTheDocument();
+  const percentScore = getByTextLowercase(
+    "33%"
+  );
+  expect(
+    percentScore
+  ).toBeInTheDocument();
+  getQuestionAnswer(0);
+  getQuestionAnswer(1);
+  getQuestionAnswer(2);
+  // Need to deal with dispaying wrong answers
+  expect(false).toBeTruthy();
+});
